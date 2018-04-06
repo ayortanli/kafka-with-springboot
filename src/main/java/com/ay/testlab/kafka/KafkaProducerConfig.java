@@ -1,4 +1,4 @@
-package com.ay.testlab.kafka.producer;
+package com.ay.testlab.kafka;
 
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
