@@ -1,7 +1,7 @@
 # kafka-with-springboot
 Startup application for Kafka with Spring Boot
 
-###1. Kafka Setup:
+##1. Kafka Setup:
 - Download Kafka from <https://kafka.apache.org/downloads>
 - Start Zookeper server with default configuration file (localhost:2181)
 ```bash
@@ -18,13 +18,13 @@ Startup application for Kafka with Spring Boot
 
 (Windows users can use bash scripts under ./bin/windows folder)
 
-###2. Application Configuration Notes
+##2. Application Configuration Notes
 - For each example, Spring Boot's CommandLineRunner interface is implemented. 
 *"CommandLineRunnner interface used to indicate that a bean should run when it is contained within a SpringApplication. Multiple CommandLineRunner beans can be defined within the same application context."*   
 - Spring boot can inject properties from YAML files by default when they are defined in resource/application.yml. Properties like Kafka initial lookup server address, topic names, and etc. are defined there.
 - KafkaProducerConfig and KafkaConsumerConfig classes contains base configurations for Kafka.
 
-###3. Simple Kafka Messaging Example  
+##3. Simple Kafka Messaging Example  
 In the simplemessage package, a message consume/produce example is implemented. In SimpleKafkaMessaging class, we send 100 consecutive messages to Kafka with our producer. Then these messages are consumed by our consumer which subscribes to Kafka server during initialization. Producer and Consumer classes are given below.  
 ```java
 public class SimpleKafkaMessageProducer {
@@ -54,3 +54,11 @@ public class SimpleKafkaMessageConsumer {
 }
 ```
 For consuming messages, we just use @KafkaListener annotation with the suitable topic name. @KafkaListener annotation defines consumer methods for Kafka topics. Note that, We also use @EnableKafka annotation in KafkaConsumerConfig configuration class. It enables auto detection of @KafkaListener annotations on any Spring-managed bean in the container. 
+
+##4. Multi-Partition Messaging Example
+This example will demonstrate usage of Kafka with multi-partitioned topic with two consumer groups.
+
+For this example we first create a new topic "kafkaMultiPartitionTopic" with 3 partitions and also add it to our application.yml file under resource folder.
+```bash
+> ./bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 3 --topic kafkaMultiPartitionTopic
+```

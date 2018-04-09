@@ -3,7 +3,6 @@ package com.ay.testlab.kafka.simplemessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
@@ -21,21 +20,21 @@ public class SimpleKafkaMessaging {
 
 
     @Bean
-    public CommandLineRunner runner() {
+    public CommandLineRunner simpleKafkaMessageRunner() {
         return args -> {
             for (int i = 0; i < 100; ++i) {
-                sender.send(topicName, "Message No : " + i);
+                sender.send(topicName, "SimpleKafkaMessaging - Message No : " + i);
             }
         };
     }
 
     @Bean
-    public SimpleKafkaMessageProducer producer(){
+    public SimpleKafkaMessageProducer simpleKafkaMessageProducer(){
         return new SimpleKafkaMessageProducer();
     }
 
     @Bean
-    public SimpleKafkaMessageConsumer consumer(){
+    public SimpleKafkaMessageConsumer simpleKafkaMessageConsumer(){
         return new SimpleKafkaMessageConsumer();
     }
 }

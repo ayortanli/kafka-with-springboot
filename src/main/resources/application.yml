@@ -2,3 +2,4 @@ kafka:
   bootstrap-servers: localhost:9092
   topic:
     simpleMessageTopic: kafkaSimpleMessageTopic
+    multiPartitionTopic: kafkaMultiPartitionTopic
