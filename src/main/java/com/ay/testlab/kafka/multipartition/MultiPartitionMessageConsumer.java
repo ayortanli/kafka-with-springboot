@@ -1,7 +1,5 @@
 package com.ay.testlab.kafka.multipartition;
 
-import org.apache.kafka.clients.consumer.Consumer;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -14,9 +12,16 @@ public class MultiPartitionMessageConsumer {
     private static final Logger LOGGER = LoggerFactory.getLogger(MultiPartitionMessageConsumer.class);
 
     @KafkaListener(topics = "${kafka.topic.multiPartitionTopic}", containerFactory = "KafkaListenerContainerFactoryWith6Consumer", groupId = "multiPartitionWith6Consumer")
-    public void receive(@Payload String payload,
+    public void receive1(@Payload String payload,
                         @Header(KafkaHeaders.RECEIVED_PARTITION_ID)Long partitionId,
                         @Header(KafkaHeaders.OFFSET)Long offset) {
-        LOGGER.info("Received payload='{}' from partitionId@offset='{}'", payload, partitionId+"@"+offset);
+        LOGGER.info("Received group=multiPartitionWith6Consumer payload='{}' from partitionId@offset='{}'", payload, partitionId+"@"+offset);
+    }
+
+    @KafkaListener(topics = "${kafka.topic.multiPartitionTopic}", containerFactory = "KafkaListenerContainerFactoryWith3Consumer", groupId = "multiPartitionWith3Consumer")
+    public void receive2(@Payload String payload,
+                         @Header(KafkaHeaders.RECEIVED_PARTITION_ID)Long partitionId,
+                         @Header(KafkaHeaders.OFFSET)Long offset) {
+        LOGGER.info("Received group=multiPartitionWith3Consumer payload='{}' from partitionId@offset='{}'", payload, partitionId+"@"+offset);
     }
 }

@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 
 /**
- * MultiPartitionMessaging uses Spring Boot CommandLineRunner to send 100 consecutive messages to Kafka server
+ * MultiPartitionMessaging uses Spring Boot CommandLineRunner to send 300 consecutive messages to 10 partition of Kafka server
  */
 @Component
 public class MultiPartitionMessaging {
@@ -22,8 +22,10 @@ public class MultiPartitionMessaging {
     @Bean
     public CommandLineRunner multiPartitionMessageRunner() {
         return args -> {
-            for (int i = 0; i < 100; ++i) {
-                sender.send(topicName, "MultiPartitionMessaging - Message No : " + i);
+            for (int i = 0; i < 30; ++i) {
+                for(int partitionKey = 1; partitionKey<=10; ++ partitionKey) {
+                    sender.send(topicName, "key"+partitionKey, "MultiPartitionMessaging - Message No = " +partitionKey+"-"+i);
+                }
             }
         };
     }

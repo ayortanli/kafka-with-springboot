@@ -23,7 +23,7 @@ public class SimpleKafkaMessaging {
     public CommandLineRunner simpleKafkaMessageRunner() {
         return args -> {
             for (int i = 0; i < 100; ++i) {
-                sender.send(topicName, "SimpleKafkaMessaging - Message No : " + i);
+                sender.send(topicName, "SimpleKafkaMessaging - Message No = " + i);
             }
         };
     }

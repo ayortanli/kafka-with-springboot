@@ -16,14 +16,14 @@ public class MultiPartitionMessageProducer {
     @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;
 
-    public void send(String topic, String payload){
-        LOGGER.info("Sending payload='{}' to topic='{}'", payload, topic);
-        ListenableFuture<SendResult<String, String>> future = kafkaTemplate.send(topic, payload);
+    public void send(String topic, String key, String payload){
+        LOGGER.info("Sending payload='{}' to topic='{}' with key='{}'", payload, topic, key);
+        ListenableFuture<SendResult<String, String>> future = kafkaTemplate.send(topic, key ,payload);
         SuccessCallback<SendResult<String,String>> successCallback = sendResult -> {
-            LOGGER.info("Sent payload='{}' to topic-partition@offset'{}'", payload, sendResult.getRecordMetadata().toString());
+            LOGGER.info("Sent payload='{}' with key='{}' to topic-partition@offset='{}'", payload, key, sendResult.getRecordMetadata().toString());
         };
         FailureCallback failureCallback = throwable -> {
-            LOGGER.info("Sent failed!!!  payload='{}' to topic='{}' to partition='{}'", payload, topic);
+            LOGGER.info("Sending payload='{}' to topic='{}' with key='{}'", payload, topic, key);
         };
         future.addCallback(successCallback, failureCallback);
     }
