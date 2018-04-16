@@ -23,7 +23,7 @@ public class MultiPartitionMessageProducer {
             LOGGER.info("Sent payload='{}' with key='{}' to topic-partition@offset='{}'", payload, key, sendResult.getRecordMetadata().toString());
         };
         FailureCallback failureCallback = throwable -> {
-            LOGGER.info("Sending payload='{}' to topic='{}' with key='{}'", payload, topic, key);
+            LOGGER.info("Sending payload='{}' to topic='{}' with key='{}' failed!!!", payload, topic, key);
         };
         future.addCallback(successCallback, failureCallback);
     }

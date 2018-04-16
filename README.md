@@ -58,7 +58,52 @@ For consuming messages, we just use @KafkaListener annotation with the suitable 
 ##4. Multi-Partition Messaging Example
 This example will demonstrate usage of Kafka with multi-partitioned topic with two consumer groups.
 
-For this example we first create a new topic "kafkaMultiPartitionTopic" with 3 partitions and also add it to our application.yml file under resource folder.
+For this example, we first create a new topic "kafkaMultiPartitionTopic" with 3 partitions and also add it to our application.yml file under resource folder.
 ```bash
 > ./bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 3 --topic kafkaMultiPartitionTopic
+```
+Now we have a new topic with 3 partitions. In this example, we make a little change to send method in producer class to control partition selection logic;
+
+Here, we request another parameter called *key*. Kafka uses this parameter to determine which partition is assigned for message. Kafka guarantees that messages with same key value will be assigned to the same partition.
+
+For this example we also add success and failure callbacks. These callbacks return valuable information after message is retrieved by Kafka server.
+```java
+public class MultiPartitionMessageProducer {
+    //...
+    public void send(String topic, String key, String payload){
+            LOGGER.info("Sending payload='{}' to topic='{}' with key='{}'", payload, topic, key);
+            ListenableFuture<SendResult<String, String>> future = kafkaTemplate.send(topic, key ,payload);
+            SuccessCallback<SendResult<String,String>> successCallback = sendResult -> {
+                LOGGER.info("Sent payload='{}' with key='{}' to topic-partition@offset='{}'", payload, key, sendResult.getRecordMetadata().toString());
+            };
+            FailureCallback failureCallback = throwable -> {
+                LOGGER.info("Sending payload='{}' to topic='{}' with key='{}' failed!!!", payload, topic, key);
+            };
+            future.addCallback(successCallback, failureCallback); 
+    }
+    //...
+}
+```
+Next, lets define our consumers. This time, we'll create two consumer groups. One with 3 members and other one has 6 consumers. The important point here is that, if you want to consume messages in a partition in order, you should at most provide same number of consumers with partition numbers. In our example, our consumer group with 3 consumer will consume messages in partitions in order. Because Kafka will assign consumers to partitions one-by-one. On the other hand, second consumer group (with 6 consumer) will lose order while consuming. Since, some partitions will be assigned with more than one consumer (Most probably 2 consumer for each partition).
+
+While defining our consumers, we set consumer group name by *groupId* parameter. Number of consumers are defined in *containerFactory* by setting concurrency as fallows:
+```java
+public class MultiPartitionMessageConsumer {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(MultiPartitionMessageConsumer.class);
+
+    @KafkaListener(topics = "${kafka.topic.multiPartitionTopic}", containerFactory = "KafkaListenerContainerFactoryWith6Consumer", groupId = "multiPartitionWith6Consumer")
+    public void receive1(@Payload String payload,
+                        @Header(KafkaHeaders.RECEIVED_PARTITION_ID)Long partitionId,
+                        @Header(KafkaHeaders.OFFSET)Long offset) {
+        LOGGER.info("Received group=multiPartitionWith6Consumer payload='{}' from partitionId@offset='{}'", payload, partitionId+"@"+offset);
+    }
+
+    @KafkaListener(topics = "${kafka.topic.multiPartitionTopic}", containerFactory = "KafkaListenerContainerFactoryWith3Consumer", groupId = "multiPartitionWith3Consumer")
+    public void receive2(@Payload String payload,
+                         @Header(KafkaHeaders.RECEIVED_PARTITION_ID)Long partitionId,
+                         @Header(KafkaHeaders.OFFSET)Long offset) {
+        LOGGER.info("Received group=multiPartitionWith3Consumer payload='{}' from partitionId@offset='{}'", payload, partitionId+"@"+offset);
+    }
+}
 ```
