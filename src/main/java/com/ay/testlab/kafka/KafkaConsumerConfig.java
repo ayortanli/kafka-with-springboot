@@ -52,7 +52,7 @@ public class KafkaConsumerConfig {
         return factory;
     }
 
-    @Bean(name = "KafkaListenerContainerFactoryWith6Consumer")
+    @Bean(name = "kafkaListenerContainerFactoryWith6Consumer")
     public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>> kafkaListenerContainerFactoryWith6Consumer() {
         ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConcurrency(6); //3 partition -> 6 thread for 6 consumer in parallel
@@ -60,7 +60,7 @@ public class KafkaConsumerConfig {
         return factory;
     }
 
-    @Bean(name = "KafkaListenerContainerFactoryWith3Consumer")
+    @Bean(name = "kafkaListenerContainerFactoryWith3Consumer")
     public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>> kafkaListenerContainerFactoryWith3Consumer() {
         ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConcurrency(3); //3 partition -> 3 thread for 3 consumer in parallel

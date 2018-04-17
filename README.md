@@ -1,6 +1,8 @@
 # kafka-with-springboot
 Startup application for Kafka with Spring Boot
 
+This project is aimed for starting Kafka based project much faster by providing simple example applications for different scenarios. It may also be used as a tutorial for those who like learning by playing with codes. :) 
+
 ##1. Kafka Setup:
 - Download Kafka from <https://kafka.apache.org/downloads>
 - Start Zookeper server with default configuration file (localhost:2181)
@@ -20,7 +22,7 @@ Startup application for Kafka with Spring Boot
 
 ##2. Application Configuration Notes
 - For each example, Spring Boot's CommandLineRunner interface is implemented. 
-*"CommandLineRunnner interface used to indicate that a bean should run when it is contained within a SpringApplication. Multiple CommandLineRunner beans can be defined within the same application context."*   
+*"CommandLineRunnner interface used to indicate that a bean should run when it is contained within a SpringApplication. Multiple CommandLineRunner beans can be defined within the same application context."*  All examples are configured to run simultaneously. In order to see output of a specific example more clear, disable the bean annotation of runner methods of other examples.
 - Spring boot can inject properties from YAML files by default when they are defined in resource/application.yml. Properties like Kafka initial lookup server address, topic names, and etc. are defined there.
 - KafkaProducerConfig and KafkaConsumerConfig classes contains base configurations for Kafka.
 
@@ -86,20 +88,20 @@ public class MultiPartitionMessageProducer {
 ```
 Next, lets define our consumers. This time, we'll create two consumer groups. One with 3 members and other one has 6 consumers. The important point here is that, if you want to consume messages in a partition in order, you should at most provide same number of consumers with partition numbers. In our example, our consumer group with 3 consumer will consume messages in partitions in order. Because Kafka will assign consumers to partitions one-by-one. On the other hand, second consumer group (with 6 consumer) will lose order while consuming. Since, some partitions will be assigned with more than one consumer (Most probably 2 consumer for each partition).
 
-While defining our consumers, we set consumer group name by *groupId* parameter. Number of consumers are defined in *containerFactory* by setting concurrency as fallows:
+While defining our consumers, we set consumer group name by *groupId* parameter. Number of consumers are defined in *containerFactory* by setting concurreny level. For this example, different containerFactory beans with different concurrency are created in KafkaConsumerConfig class.:
 ```java
 public class MultiPartitionMessageConsumer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MultiPartitionMessageConsumer.class);
 
-    @KafkaListener(topics = "${kafka.topic.multiPartitionTopic}", containerFactory = "KafkaListenerContainerFactoryWith6Consumer", groupId = "multiPartitionWith6Consumer")
+    @KafkaListener(topics = "${kafka.topic.multiPartitionTopic}", containerFactory = "kafkaListenerContainerFactoryWith6Consumer", groupId = "multiPartitionWith6Consumer")
     public void receive1(@Payload String payload,
                         @Header(KafkaHeaders.RECEIVED_PARTITION_ID)Long partitionId,
                         @Header(KafkaHeaders.OFFSET)Long offset) {
         LOGGER.info("Received group=multiPartitionWith6Consumer payload='{}' from partitionId@offset='{}'", payload, partitionId+"@"+offset);
     }
 
-    @KafkaListener(topics = "${kafka.topic.multiPartitionTopic}", containerFactory = "KafkaListenerContainerFactoryWith3Consumer", groupId = "multiPartitionWith3Consumer")
+    @KafkaListener(topics = "${kafka.topic.multiPartitionTopic}", containerFactory = "kafkaListenerContainerFactoryWith3Consumer", groupId = "multiPartitionWith3Consumer")
     public void receive2(@Payload String payload,
                          @Header(KafkaHeaders.RECEIVED_PARTITION_ID)Long partitionId,
                          @Header(KafkaHeaders.OFFSET)Long offset) {
