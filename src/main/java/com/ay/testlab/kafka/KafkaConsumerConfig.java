@@ -67,4 +67,13 @@ public class KafkaConsumerConfig {
         factory.setConsumerFactory(consumerFactory());
         return factory;
     }
+
+    @Bean(name = "kafkaListenerContainerFactoryForBatchConsumer")
+    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>> kafkaListenerContainerFactoryForBatchConsumer() {
+        ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConcurrency(1);
+        factory.setBatchListener(true);
+        factory.setConsumerFactory(consumerFactory());
+        return factory;
+    }
 }

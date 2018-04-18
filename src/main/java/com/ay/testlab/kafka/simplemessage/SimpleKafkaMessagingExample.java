@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
  * SimpleKafkaMessaging uses Spring Boot CommandLineRunner to send 100 consecutive messages to Kafka server
  */
 @Component
-public class SimpleKafkaMessaging {
+public class SimpleKafkaMessagingExample {
 
     @Autowired
     private SimpleKafkaMessageProducer sender;

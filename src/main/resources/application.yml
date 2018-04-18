@@ -3,3 +3,4 @@ kafka:
   topic:
     simpleMessageTopic: kafkaSimpleMessageTopic
     multiPartitionTopic: kafkaMultiPartitionTopic
+    batchConsumerTopic: kafkaBatchConsumerTopic

@@ -1,7 +1,7 @@
 # kafka-with-springboot
 Startup application for Kafka with Spring Boot
 
-This project is aimed for starting Kafka based project much faster by providing simple example applications for different scenarios. It may also be used as a tutorial for those who like learning by playing with codes. :) 
+This project is aimed for starting Kafka based project much faster by providing simple example applications for different scenarios. It may also be used as a tutorial for those who likes learning by playing with codes. :) 
 
 ### 1. Kafka Setup:
 - Download Kafka from <https://kafka.apache.org/downloads>
@@ -108,4 +108,12 @@ public class MultiPartitionMessageConsumer {
         LOGGER.info("Received group=multiPartitionWith3Consumer payload='{}' from partitionId@offset='{}'", payload, partitionId+"@"+offset);
     }
 }
+```
+
+### 5. Batch Message Consuming Example
+This example will demonstrate usage of Kafka in batch mode. That is; consumers consume messages not one by one but as a group. 
+
+Lets first create a new topic "kafkaBatchConsumerTopic" and again add it to our application.yml file under resource folder.
+```bash
+> ./bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic kafkaBatchConsumerTopic
 ```
