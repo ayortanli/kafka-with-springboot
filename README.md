@@ -117,3 +117,52 @@ Lets first create a new topic "kafkaBatchConsumerTopic" and again add it to our 
 ```bash
 > ./bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic kafkaBatchConsumerTopic
 ```
+
+I will use a simple message producer in this example, what we will change here is only consumer part. Our consumer should be configured and implemented in a way that it can handle multiple message at a time. First lets take a look at configuration part.
+
+In KafkaConsumerConfig class, we create a new KafkaListenerContainerFactory which can create listeners for batch operations. This is done by *batchListener* property of our factory as follows:
+
+```java
+@Configuration
+@EnableKafka
+public class KafkaConsumerConfig {
+    
+    //....
+    
+    @Bean(name = "kafkaListenerContainerFactoryForBatchConsumer")
+    public KafkaListenerContainerFactory<ConcurrentMessageListenerContainer<String, String>> kafkaListenerContainerFactoryForBatchConsumer() {
+        ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConcurrency(1);
+        factory.setBatchListener(true);
+        factory.setConsumerFactory(consumerFactory());
+        return factory;
+    }
+    
+    //....
+}
+```
+
+Now our consumer can receive more than one records. The number of records received is dynamically calculated in our configuration. It is also possible to set an upper limit for that. This can be done by setting *MAX_POLL_RECORDS_CONFIG* property on *ConsumerConfig* configuration. 
+
+After than, consumer implementation should only be updated to receive list of messages as parameters as follows:
+
+```java
+
+public class BatchMessageConsumer {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(BatchMessageConsumer.class);
+
+    @KafkaListener(topics = "${kafka.topic.batchConsumerTopic}", containerFactory = "kafkaListenerContainerFactoryForBatchConsumer", groupId = "batchConsumer")
+    public void receive(@Payload List<String> payloads,
+                        @Header(KafkaHeaders.RECEIVED_PARTITION_ID) List<Long> partitionIds,
+                        @Header(KafkaHeaders.OFFSET) List<Long> offsets) {
+        LOGGER.info("Received group=batchConsumer with batch group data: ");
+        for (int i = 0; i< payloads.size(); ++i) {
+            LOGGER.info("---------------- payload='{}' from partitionId@offset='{}'", payloads.get(i), partitionIds.get(i)+"@"+offsets.get(i));
+        }
+
+    }
+}
+
+```
+   
