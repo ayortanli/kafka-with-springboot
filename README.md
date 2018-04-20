@@ -166,3 +166,46 @@ public class BatchMessageConsumer {
 
 ```
    
+## - Extras
+
+### -- Unit Testing with Embedded Kafka Server
+
+*spring-kafka-test* library includes an embedded kafka server which cam be used in testing our kafka dependent application logic. In order to use it, first we should add testing libraries (spring-boot-starter-test and spring-kafka-test) to maven pom file.
+
+Next we'll create a new application.yml file under test resources folder for use with test cases. We'll set our server address and also test topic name here. Note that, embedded kafka server is started on a random port. Therefore, we are using the *spring.embedded.kafka.brokers* property as server address. This property is set by the KafkaEmbedded class which we will use to start embedded kafka server.
+```yaml
+kafka:
+  bootstrap-servers: ${spring.embedded.kafka.brokers}
+  topic:
+    simpleMessageTopic: testingTopic
+```
+
+KafkaEmbedded class is annotated with @ClassRule. It starts Kafka server on a random port before test cases starts. It gets three arguments. These are number of servers, whether controlled server shutdown is required or not, and topic names on servers. Our simple test case is as follows: 
+
+```java
+@RunWith(SpringRunner.class)
+@SpringBootTest
+@DirtiesContext
+@ActiveProfiles("test")
+public class SimpleKafkaMessageTest {
+
+    @Value("${kafka.topic.simpleMessageTopic}")
+    private String topicName;
+
+    @Autowired
+    private SimpleKafkaMessageProducer sender;
+
+    @Autowired
+    private SimpleKafkaMessageConsumer consumer;
+
+    @ClassRule
+    public static KafkaEmbedded kafkaEmbedded = new KafkaEmbedded(1,false, "testingTopic");
+
+    @Test
+    public void testSendReceive() throws Exception {
+        sender.send(topicName, "test Message");
+        TimeUnit.SECONDS.sleep(1);
+        Assert.assertEquals("test Message", consumer.message());
+    }
+}
+```
