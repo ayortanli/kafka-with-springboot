@@ -64,7 +64,7 @@ For this example, we first create a new topic "kafkaMultiPartitionTopic" with 3 
 ```bash
 > ./bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 3 --topic kafkaMultiPartitionTopic
 ```
-Now we have a new topic with 3 partitions. In this example, we make a little change to send method in producer class to control partition selection logic;
+Now we have a new topic with 3 partitions. In this example, we'll make a little change to our message sending method in producer class to control partition selection logic;
 
 Here, we request another parameter called *key*. Kafka uses this parameter to determine which partition is assigned for message. Kafka guarantees that messages with same key value will be assigned to the same partition.
 
@@ -86,7 +86,13 @@ public class MultiPartitionMessageProducer {
     //...
 }
 ```
-Next, lets define our consumers. This time, we'll create two consumer groups. One with 3 members and other one has 6 consumers. The important point here is that, if you want to consume messages in a partition in order, you should at most provide same number of consumers with partition numbers. In our example, our consumer group with 3 consumer will consume messages in partitions in order. Because Kafka will assign consumers to partitions one-by-one. On the other hand, second consumer group (with 6 consumer) will lose order while consuming. Since, some partitions will be assigned with more than one consumer (Most probably 2 consumer for each partition).
+Next, lets define our consumers. This time, we'll create two consumer groups. 
+
+First consumer group consists of two different consumers (receiver1a and receiver1b). Since we have 3 partitions, Kafka will assign two partitions to one consumer and one partition to the other one. 
+
+Second consumer group contains 6 consumer threads which are call same listener method (receive2). This time, we create consumers by setting concurrency level of ListenerContainer. As a result, all our consumers call same listener method with multi-thread way. I have used concurrency just to see how different it works. It differs only in multi-thread nature and all consumers works in the same listener container. 
+
+The important point in this example is that, if the number of consumers are less than number of partitions then some partitions will be assigned to the same consumers. If there are equal number of partitions and consumers then each consumer will handle one partition. Finally, if consumers are high in number then some of them will be idle and only be there for high availability. 
 
 While defining our consumers, we set consumer group name by *groupId* parameter. Number of consumers are defined in *containerFactory* by setting concurreny level. For this example, different containerFactory beans with different concurrency are created in KafkaConsumerConfig class.:
 ```java
@@ -94,18 +100,25 @@ public class MultiPartitionMessageConsumer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MultiPartitionMessageConsumer.class);
 
-    @KafkaListener(topics = "${kafka.topic.multiPartitionTopic}", containerFactory = "kafkaListenerContainerFactoryWith6Consumer", groupId = "multiPartitionWith6Consumer")
-    public void receive1(@Payload String payload,
-                        @Header(KafkaHeaders.RECEIVED_PARTITION_ID)Long partitionId,
-                        @Header(KafkaHeaders.OFFSET)Long offset) {
-        LOGGER.info("Received group=multiPartitionWith6Consumer payload='{}' from partitionId@offset='{}'", payload, partitionId+"@"+offset);
+    @KafkaListener(topics = "${kafka.topic.multiPartitionTopic}", groupId = "multiPartitionWith2Consumer")
+    public void receiver1a(@Payload String payload,
+                            @Header(KafkaHeaders.RECEIVED_PARTITION_ID)Long partitionId,
+                            @Header(KafkaHeaders.OFFSET)Long offset) {
+        LOGGER.info("Received consumer=1a group=multiPartitionWith2Consumer payload='{}' from partitionId@offset='{}'", payload, partitionId+"@"+offset);
     }
-
-    @KafkaListener(topics = "${kafka.topic.multiPartitionTopic}", containerFactory = "kafkaListenerContainerFactoryWith3Consumer", groupId = "multiPartitionWith3Consumer")
+    
+    @KafkaListener(topics = "${kafka.topic.multiPartitionTopic}", groupId = "multiPartitionWith2Consumer")
+    public void receiver1b(@Payload String payload,
+                            @Header(KafkaHeaders.RECEIVED_PARTITION_ID)Long partitionId,
+                            @Header(KafkaHeaders.OFFSET)Long offset) {
+        LOGGER.info("Received consumer=1b group=multiPartitionWith2Consumer payload='{}' from partitionId@offset='{}'", payload, partitionId+"@"+offset);
+    }
+    
+    @KafkaListener(topics = "${kafka.topic.multiPartitionTopic}", containerFactory = "kafkaListenerContainerFactoryWith6Consumer", groupId = "multiPartitionWithSingleConsumer6Thread")
     public void receive2(@Payload String payload,
                          @Header(KafkaHeaders.RECEIVED_PARTITION_ID)Long partitionId,
                          @Header(KafkaHeaders.OFFSET)Long offset) {
-        LOGGER.info("Received group=multiPartitionWith3Consumer payload='{}' from partitionId@offset='{}'", payload, partitionId+"@"+offset);
+        LOGGER.info("Received consumer=2 group=multiPartitionWithSingleConsumer6Thread payload='{}' from partitionId@offset='{}'", payload, partitionId+"@"+offset);
     }
 }
 ```
