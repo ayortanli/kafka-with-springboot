@@ -11,24 +11,24 @@ public class MultiPartitionMessageConsumer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MultiPartitionMessageConsumer.class);
 
-    @KafkaListener(topics = "${kafka.topic.multiPartitionTopic}", groupId = "multiPartitionWithSingleConsumer3Thread")
+    @KafkaListener(topics = "${kafka.topic.multiPartitionTopic}", groupId = "multiPartitionWith2Consumer")
     public void receiver1a(@Payload String payload,
                         @Header(KafkaHeaders.RECEIVED_PARTITION_ID)Long partitionId,
                         @Header(KafkaHeaders.OFFSET)Long offset) {
         LOGGER.info("Received consumer=1a group=multiPartitionWith2Consumer payload='{}' from partitionId@offset='{}'", payload, partitionId+"@"+offset);
     }
 
-    @KafkaListener(topics = "${kafka.topic.multiPartitionTopic}", groupId = "multiPartitionWithSingleConsumer3Thread")
+    @KafkaListener(topics = "${kafka.topic.multiPartitionTopic}", groupId = "multiPartitionWith2Consumer")
     public void receiver1b(@Payload String payload,
                             @Header(KafkaHeaders.RECEIVED_PARTITION_ID)Long partitionId,
                             @Header(KafkaHeaders.OFFSET)Long offset) {
         LOGGER.info("Received consumer=1b group=multiPartitionWith2Consumer payload='{}' from partitionId@offset='{}'", payload, partitionId+"@"+offset);
     }
 
-    @KafkaListener(topics = "${kafka.topic.multiPartitionTopic}", containerFactory = "kafkaListenerContainerFactoryWith3Consumer", groupId = "multiPartitionWithSingleConsumer3Thread")
+    @KafkaListener(topics = "${kafka.topic.multiPartitionTopic}", containerFactory = "kafkaListenerContainerFactoryWith6Consumer", groupId = "multiPartitionWithSingleConsumer6Thread")
     public void receive2(@Payload String payload,
                          @Header(KafkaHeaders.RECEIVED_PARTITION_ID)Long partitionId,
                          @Header(KafkaHeaders.OFFSET)Long offset) {
-        LOGGER.info("Received consumer=2 group=multiPartitionWithSingleConsumer3Thread payload='{}' from partitionId@offset='{}'", payload, partitionId+"@"+offset);
+        LOGGER.info("Received consumer=2 group=multiPartitionWithSingleConsumer6Thread payload='{}' from partitionId@offset='{}'", payload, partitionId+"@"+offset);
     }
 }
