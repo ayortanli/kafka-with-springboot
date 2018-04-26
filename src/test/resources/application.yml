@@ -4,3 +4,5 @@ kafka:
     simpleMessageTopic: testingTopic
     multiPartitionTopic: dummy
     batchConsumerTopic: dummy
+    streamRawDataTopic: dummy
+    streamProcessedDataTopic: dummy

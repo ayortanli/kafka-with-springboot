@@ -222,3 +222,20 @@ public class SimpleKafkaMessageTest {
     }
 }
 ```
+
+
+1. Add Dependency
+</dependency><dependency>
+    <groupId>org.apache.kafka</groupId>
+    <artifactId>kafka-streams</artifactId>
+    <version>1.1.0</version>
+</dependency>
+
+2. Create new topics and add to application.yml
+.\bin\windows\kafka-topics.bat --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic kafkaStreamRawDataTopic
+.\bin\windows\kafka-topics.bat --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic kafkaStreamProcessedDataTopic
+
+3. implement code
+one producer
++one stream 
+one consumer

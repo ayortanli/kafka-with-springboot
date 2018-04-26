@@ -4,3 +4,5 @@ kafka:
     simpleMessageTopic: kafkaSimpleMessageTopic
     multiPartitionTopic: kafkaMultiPartitionTopic
     batchConsumerTopic: kafkaBatchConsumerTopic
+    streamRawDataTopic: kafkaStreamRawDataTopic
+    streamProcessedDataTopic: kafkaStreamProcessedDataTopic
