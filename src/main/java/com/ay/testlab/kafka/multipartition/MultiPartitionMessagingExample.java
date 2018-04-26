@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 /**
  * MultiPartitionMessaging uses Spring Boot CommandLineRunner to send 300 consecutive messages to 10 partition of Kafka server
  */
-@Component
+//@Component
 public class MultiPartitionMessagingExample {
 
     @Autowired

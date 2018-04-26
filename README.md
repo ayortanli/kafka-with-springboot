@@ -228,7 +228,7 @@ public class SimpleKafkaMessageTest {
 </dependency><dependency>
     <groupId>org.apache.kafka</groupId>
     <artifactId>kafka-streams</artifactId>
-    <version>1.1.0</version>
+    <version>1.1.0</version> -- not work with upper versions
 </dependency>
 
 2. Create new topics and add to application.yml
