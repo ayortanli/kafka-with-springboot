@@ -178,7 +178,30 @@ public class BatchMessageConsumer {
 }
 
 ```
-   
+
+## 6. Kafka Streams Api Example
+
+For using Kafka Streams, we need to first add kafka-streams library to our project. 
+```xml
+<dependency>
+    <groupId>org.apache.kafka</groupId>
+    <artifactId>kafka-streams</artifactId>
+    <version>1.0.0</version>
+</dependency>
+```
+For this example, we will create a scenario where producer sends message to a topic. Than our kafka stream code reads streams of data, processes it and sends it to another topic. Finally our consumer gets processed data and does some job.
+
+Lets start with creation of two topics one for raw data and another one for processed data.
+
+```bash
+> ./bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 3 --topic kafkaStreamRawDataTopic
+> ./bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 3 --topic kafkaStreamProcessedDataTopic
+```
+
+Then we will create a simple producer that sends data to *kafkaStreamRawDataTopic* and a simple consumer that reads data from *kafkaStreamProcessedDataTopic*. 
+
+Now we can talk about stream processing code block. 
+
 ## - Extras
 
 ### -- Unit Testing with Embedded Kafka Server
@@ -222,4 +245,3 @@ public class SimpleKafkaMessageTest {
     }
 }
 ```
-
