@@ -200,7 +200,55 @@ Lets start with creation of two topics one for raw data and another one for proc
 
 Then we will create a simple producer that sends data to *kafkaStreamRawDataTopic* and a simple consumer that reads data from *kafkaStreamProcessedDataTopic*. 
 
-Now we can talk about stream processing code block. 
+Now we can talk about stream processing code block which in our case is *SimpleKafkaStream.java*. In our stream class we should define *@EnableKafkaStream* annotation with *@Configuration* annotation by which kafka-streams can declare some beans like StreamBuilder in the application context automatically.
+
+After then, we define config method for connecting our stream code to Kafka and implement our stream processing method. In this example we just revert the string stream data and push it to another topic. As final note; in our configuration bean, we set bean name to *DEFAULT_STREAMS_CONFIG_BEAN_NAME*. By this way, we can declare to use default StreamBuilder in Stream method. Otherwise, we should also create a StreamBuilder bean along with our configuration bean.  
+
+```java
+@Configuration
+@EnableKafka
+@EnableKafkaStreams
+public class SimpleKafkaStream {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleKafkaStream.class);
+
+    @Value("${kafka.bootstrap-servers}")
+    private String bootstrapServers;
+
+    @Value("${kafka.topic.streamRawDataTopic}")
+    private String rawDataTopic;
+
+    @Value("${kafka.topic.streamProcessedDataTopic}")
+    private String processedDataTopic;
+
+    @Bean(name = KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)
+    public StreamsConfig kafkaStreamsConfigs() {
+        Map<String, Object> props = new HashMap<>();
+        props.put(StreamsConfig.APPLICATION_ID_CONFIG, "simpleKafkaStream");
+        props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
+        props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
+        props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
+        props.put(StreamsConfig.DEFAULT_TIMESTAMP_EXTRACTOR_CLASS_CONFIG, WallclockTimestampExtractor.class.getName());
+        return new StreamsConfig(props);
+    }
+
+    @Bean
+    public KStream<String, String> kafkaStream(StreamsBuilder kStreamBuilder) {
+        KStream<String, String> stream = kStreamBuilder.stream(rawDataTopic);
+
+        //process messages (reverse order)
+        stream.mapValues(messageValue -> {
+            LOGGER.info("Stream:SimpleKafkaStream processing payloads='{}'", messageValue);
+            return new StringBuilder(messageValue).reverse().toString();
+        }).to(processedDataTopic);
+
+        LOGGER.info("Stream started here...");
+        return stream;
+    }
+}
+
+```
+ 
 
 ## - Extras
 
