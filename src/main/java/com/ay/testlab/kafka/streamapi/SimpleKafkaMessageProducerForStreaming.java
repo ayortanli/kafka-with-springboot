@@ -5,9 +5,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 
-public class SimpleKafkaMessageProducer {
+public class SimpleKafkaMessageProducerForStreaming {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleKafkaMessageProducer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleKafkaMessageProducerForStreaming.class);
 
     @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;

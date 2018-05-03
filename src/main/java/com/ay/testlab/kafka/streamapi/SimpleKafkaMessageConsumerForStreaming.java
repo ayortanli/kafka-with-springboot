@@ -4,9 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
 
-public class SimpleKafkaMessageConsumer {
+public class SimpleKafkaMessageConsumerForStreaming {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleKafkaMessageConsumer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleKafkaMessageConsumerForStreaming.class);
 
     @KafkaListener(topics = "${kafka.topic.streamProcessedDataTopic}")
     public void receive(String payload) {
