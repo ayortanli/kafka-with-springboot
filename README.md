@@ -248,7 +248,13 @@ public class SimpleKafkaStream {
 }
 
 ```
- 
+
+## 7. Kafka Connect Api Example
+Kafka connect api provides data read/write interfaces between different data sources (File, DB, etc.) and Kafka topics. It can be used just by providing configuration files to Kafka Server. It is also possible to use it by implementing our own Kafka connect api based applications.
+
+#### Connect api with configuration files
+
+#### Connect api with implementing connector class 
 
 ## - Extras
 
