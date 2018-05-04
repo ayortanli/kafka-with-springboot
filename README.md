@@ -250,9 +250,67 @@ public class SimpleKafkaStream {
 ```
 
 ## 7. Kafka Connect Api Example
-Kafka connect api provides data read/write interfaces between different data sources (File, DB, etc.) and Kafka topics. It can be used just by injecting configuration files to Kafka Server. It is also possible to use it by implementing our own Kafka connect api based applications. We'll try both of them.
+Kafka connect api provides data read/write interfaces between different data sources (file, database, cloud, etc.) and Kafka topics. It can be used just by injecting configuration files to Kafka Server. It is also possible to use it by implementing our own Kafka connect api based applications. We'll try both of them.
 #### Connect api with configuration files
+For configuration based example, we will work on file based connectors since there is no setup required. :) Default configuration files under the Kafka config folder can be used as base configuration. In our example, we'll read from file to a topic then process messages with our kafka stream that we have implemented in the previous example. Finally, our second connector will write processed messages into another file.
 
+Let's start with configuring our data reader (source connector).
+
+connect-file-source.properties
+```properties
+# Unique name for the connector. Attempting to register again with the same name will fail.
+name=local-file-source
+# The Java class for the connector
+connector.class=FileStreamSource
+# The maximum number of tasks that should be created for this connector. The connector may create fewer tasks if it cannot achieve this level of parallelism.
+tasks.max=1
+# source filename
+file=sourceData.txt
+# topic where read data will be sent
+topic=kafkaStreamRawDataTopic
+# messages can also be modified with transformations like below: (this transform adds a field and its value to each message)
+# transforms=InsertSource
+# transforms.InsertSource.type=org.apache.kafka.connect.transforms.InsertField$Value
+# transforms.InsertSource.static.field=data_source
+# transforms.InsertSource.static.value=test-file-source
+```
+After reading data from file and sending messages to *kafkaStreamRawDataTopic*, Kafka stream application process message and send it to *kafkaStreamProcessedDataTopic*. Then lets configure our data writer (sink connector)
+
+connect-file-sink.properties
+```properties
+# Unique name for the connector. Attempting to register again with the same name will fail.
+name=local-file-sink
+# The Java class for the connector
+connector.class=FileStreamSink
+# The maximum number of tasks that should be created for this connector. The connector may create fewer tasks if it cannot achieve this level of parallelism.
+tasks.max=1
+# source filename
+file=sinkData.txt
+# topic where messages are retrieved in order to write
+topic=kafkaStreamProcessedDataTopic
+```
+Now our sink connector read messages from topic *kafkaStreamProcessedDataTopic* and write them to the *sinkData.txt* file.
+
+One more configuration file is required for defining environment properties like server address, converter types, etc.
+
+connect-file-standalone.properties
+```properties
+bootstrap.servers=localhost:9092
+# The converters specify the format of data in Kafka and how to translate it into Connect data. Every Connect user will
+# need to configure these based on the format they want their data in when loaded from or stored into Kafka
+key.converter=org.apache.kafka.connect.storage.StringConverter
+value.converter=org.apache.kafka.connect.storage.StringConverter
+# Converter-specific settings can be passed in by prefixing the Converter's setting with the converter we want to apply
+# it to
+key.converter.schemas.enable=true
+value.converter.schemas.enable=true
+```
+
+Finally, we can start our connectors by injecting configuration files to Kafka. Note that, we can inject any number of connectors with the following command 
+```bash
+> ./bin/connect-standalone.sh config/connect-standalone.properties config/connect-file-source.properties config/connect-file-sink.properties
+```
+(Don't forget to add some data to *sourceData.txt file* to see the result)
 
 #### Connect api with implementing connector class 
 
