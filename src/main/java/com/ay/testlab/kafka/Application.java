@@ -35,7 +35,7 @@ public class Application {
     public CommandLineRunner batchMessageConsumerRunner() {
         return args -> {
             //Just comment out the examples to run
-            simpleKafkaMessagingExample.execute();
+            //simpleKafkaMessagingExample.execute();
             //multiPartitionMessagingExample.execute();
             //batchMessageConsumingExample.execute();
             //kafkaStreamExample.execute();

@@ -312,7 +312,8 @@ Finally, we can start our connectors by injecting configuration files to Kafka. 
 ```
 (Don't forget to add some data to *sourceData.txt file* to see the result)
 
-#### Connect api with implementing connector class 
+#### Connect api with implementing programmatically
+Now, lets implement same configuration programmatically.
 
 ## - Extras
 
