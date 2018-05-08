@@ -1,7 +1,7 @@
 # kafka-with-springboot
-Startup application for Kafka with Spring Boot
+Demonstrations for Kafka with Spring Boot
 
-This project is aimed for starting Kafka based project much faster by providing simple example applications for different scenarios. It may also be used as a tutorial for those who likes learning by playing with codes. :) 
+This project is created for starting Kafka based project much faster by providing simple example applications for different scenarios. It may also be used as a tutorial for those who likes learning by playing with codes. :) 
 
 ### 1. Kafka Setup:
 - Download Kafka from <https://kafka.apache.org/downloads>
@@ -13,20 +13,20 @@ This project is aimed for starting Kafka based project much faster by providing 
 ```bash
 > ./bin/kafka-server-start.sh ./config/server.properties
 ```
-- Create a test topic to use with the application.
+(Windows users can use bash scripts under ./bin/windows folder)
+
+### 2. Application Configuration Notes
+- For each example, just activate related commented lines in *Application.java*. 
+- Spring boot can inject properties from YAML files by default when they are defined in resource/application.yml. Properties like Kafka initial lookup server address, topic names, and etc. are defined there.
+- KafkaProducerConfig and KafkaConsumerConfig classes contains base configurations for Kafka.
+- There is also a dummy rest controller, if you wish to play Kafka in rest calls.
+
+### 3. Simple Kafka Messaging Example
+First Create a test topic to use with the example.
 ```bash
 > ./bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic kafkaTestTopic
 ```
 
-(Windows users can use bash scripts under ./bin/windows folder)
-
-### 2. Application Configuration Notes
-- For each example, Spring Boot's CommandLineRunner interface is implemented. 
-*"CommandLineRunnner interface used to indicate that a bean should run when it is contained within a SpringApplication. Multiple CommandLineRunner beans can be defined within the same application context."*  All examples are configured to run simultaneously. In order to see output of a specific example more clear, disable the bean annotation of runner methods of other examples.
-- Spring boot can inject properties from YAML files by default when they are defined in resource/application.yml. Properties like Kafka initial lookup server address, topic names, and etc. are defined there.
-- KafkaProducerConfig and KafkaConsumerConfig classes contains base configurations for Kafka.
-
-### 3. Simple Kafka Messaging Example  
 In the simplemessage package, a message consume/produce example is implemented. In SimpleKafkaMessaging class, we send 100 consecutive messages to Kafka with our producer. Then these messages are consumed by our consumer which subscribes to Kafka server during initialization. Producer and Consumer classes are given below.  
 ```java
 public class SimpleKafkaMessageProducer {
@@ -66,9 +66,9 @@ For this example, we first create a new topic "kafkaMultiPartitionTopic" with 3 
 ```
 Now we have a new topic with 3 partitions. In this example, we'll make a little change to our message sending method in producer class to control partition selection logic;
 
-Here, we request another parameter called *key*. Kafka uses this parameter to determine which partition is assigned for message. Kafka guarantees that messages with same key value will be assigned to the same partition.
+Here, *kafkaTemplate* request another parameter called *key*. Kafka uses this parameter to determine which partition is assigned for message. Kafka guarantees that messages with same key value will be assigned to the same partition.
 
-For this example we also add success and failure callbacks. These callbacks return valuable information after message is retrieved by Kafka server.
+We also add success and failure callbacks here for debugging purpose. These callbacks return valuable information after message is retrieved by Kafka server.
 ```java
 public class MultiPartitionMessageProducer {
     //...
@@ -90,7 +90,7 @@ Next, lets define our consumers. This time, we'll create two consumer groups.
 
 First consumer group consists of two different consumers (receiver1a and receiver1b). Since we have 3 partitions, Kafka will assign two partitions to one consumer and one partition to the other one. 
 
-Second consumer group contains 6 consumer threads which are call same listener method (receive2). This time, we create consumers by setting concurrency level of ListenerContainer. As a result, all our consumers call same listener method with multi-thread way. I have used concurrency just to see how different it works. It differs only in multi-thread nature and all consumers works in the same listener container. 
+Second consumer group contains 6 consumer threads which'll call same listener method (receive2). This time, we create consumers by setting concurrency level of ListenerContainer. As a result, all our consumers'll call same listener method with multi-thread way. I have used concurrency just to see how different it'' work. It differs only in multi-thread nature and all consumers works in the same listener container. 
 
 The important point in this example is that, if the number of consumers are less than number of partitions then some partitions will be assigned to the same consumers. If there are equal number of partitions and consumers then each consumer will handle one partition. Finally, if consumers are high in number then some of them will be idle and only be there for high availability. 
 
@@ -189,7 +189,7 @@ For using Kafka Streams, we need to first add kafka-streams library to our proje
     <version>1.0.0</version>
 </dependency>
 ```
-For this example, we will create a scenario where producer sends message to a topic. Than our kafka stream code reads streams of data, processes it and sends it to another topic. Finally our consumer gets processed data and does some job.
+For this example, we will create a scenario where producer'll send message to a topic. Than our kafka stream code'll read streams of data, process it and send it to another topic. Finally our consumer'll get processed data and do its job.
 
 Lets start with creation of two topics one for raw data and another one for processed data.
 
@@ -200,9 +200,9 @@ Lets start with creation of two topics one for raw data and another one for proc
 
 Then we will create a simple producer that sends data to *kafkaStreamRawDataTopic* and a simple consumer that reads data from *kafkaStreamProcessedDataTopic*. 
 
-Now we can talk about stream processing code block which in our case is *SimpleKafkaStream.java*. In our stream class we should define *@EnableKafkaStream* annotation with *@Configuration* annotation by which kafka-streams can declare some beans like StreamBuilder in the application context automatically.
+Now we can talk about stream processing code block which; in our case, is *SimpleKafkaStream.java*. In our stream class we should define *@EnableKafkaStream* annotation with *@Configuration* annotation by which kafka-streams can declare some beans like StreamBuilder in the application context automatically.
 
-After then, we define config method for connecting our stream code to Kafka and implement our stream processing method. In this example we just revert the string stream data and push it to another topic. As final note; in our configuration bean, we set bean name to *DEFAULT_STREAMS_CONFIG_BEAN_NAME*. By this way, we can declare to use default StreamBuilder in Stream method. Otherwise, we should also create a StreamBuilder bean along with our configuration bean.  
+After then, we define config method for connecting our stream code to Kafka and implement our stream processing method. In this example we just revert the string stream data and push it to another topic. As final note; in our configuration bean, we set bean name to *DEFAULT_STREAMS_CONFIG_BEAN_NAME*. By this way, Spring Boot'll inject default StreamBuilder. Otherwise, we should also create a StreamBuilder bean along with our configuration bean.  
 
 ```java
 @Configuration
@@ -252,7 +252,7 @@ public class SimpleKafkaStream {
 ## 7. Kafka Connect Api Example
 Kafka connect api provides data read/write interfaces between different data sources (file, database, cloud, etc.) and Kafka topics. It can be used just by injecting configuration files to Kafka Server. It is also possible to use it by implementing our own Kafka connect api based applications. We'll try both of them.
 #### Connect api with configuration files
-For configuration based example, we will work on file based connectors since there is no setup required. :) Default configuration files under the Kafka config folder can be used as base configuration. In our example, we'll read from file to a topic then process messages with our kafka stream that we have implemented in the previous example. Finally, our second connector will write processed messages into another file.
+For configuration based example, we will work on file based connectors since no setup required. Default configuration files under the Kafka config folder can be used as base configuration. In our example, we'll read from file to a topic then process messages with our kafka stream that we have implemented in the previous example. Finally, our second connector will write processed messages into another file.
 
 Let's start with configuring our data reader (source connector).
 
@@ -274,7 +274,7 @@ topic=kafkaStreamRawDataTopic
 # transforms.InsertSource.static.field=data_source
 # transforms.InsertSource.static.value=test-file-source
 ```
-After reading data from file and sending messages to *kafkaStreamRawDataTopic*, Kafka stream application process message and send it to *kafkaStreamProcessedDataTopic*. Then lets configure our data writer (sink connector)
+After reading data from file and sending messages to *kafkaStreamRawDataTopic*, Kafka stream application'll process messages and send them to *kafkaStreamProcessedDataTopic*. Then lets configure our data writer (sink connector)
 
 connect-file-sink.properties
 ```properties
@@ -322,7 +322,7 @@ There is currently no Spring Boot integration. Also writing our own connectors s
 
 ### - Extra: Unit Testing with Embedded Kafka Server
 
-*spring-kafka-test* library includes an embedded kafka server which cam be used in testing our kafka dependent application logic. In order to use it, first we should add testing libraries (spring-boot-starter-test and spring-kafka-test) to maven pom file.
+*spring-kafka-test* library includes an embedded kafka server which can be used in testing our kafka dependent application logic. In order to use it, first we should add testing libraries (spring-boot-starter-test and spring-kafka-test) to maven pom file.
 
 Next we'll create a new application.yml file under test resources folder for use with test cases. We'll set our server address and also test topic name here. Note that, embedded kafka server is started on a random port. Therefore, we are using the *spring.embedded.kafka.brokers* property as server address. This property is set by the KafkaEmbedded class which we will use to start embedded kafka server.
 ```yaml
