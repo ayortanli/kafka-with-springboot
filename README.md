@@ -312,12 +312,15 @@ Finally, we can start our connectors by injecting configuration files to Kafka. 
 ```
 (Don't forget to add some data to *sourceData.txt file* to see the result)
 
-#### Connect api with implementing programmatically
-Now, lets implement same configuration programmatically.
+#### Connect api with programmatic implementation
+Same configuration can also be implemented programmatically with Kafka Connect api. There are two group of classes to implement: *SourceConnector* / *SinkConnector* and *SourceTask* / *SinkTask*. These can be used to implement our own connectors. 
 
-## - Extras
+"Connectors do not perform any data copying themselves: their configuration describes the data to be copied, and the Connector is responsible for breaking that job into a set of Tasks that can be distributed to workers. These Tasks also come in two corresponding flavors: SourceTask and SinkTask. With an assignment in hand, each Task must copy its subset of the data to or from Kafka..." (from documentation)
 
-### -- Unit Testing with Embedded Kafka Server
+There is currently no Spring Boot integration. Also writing our own connectors seems to be a little bit complex according to configuration based ones. Therefore, I am not planning to implement an example for now. Those who want to try can use <https://kafka.apache.org/documentation/#connect> 
+
+
+### - Extra: Unit Testing with Embedded Kafka Server
 
 *spring-kafka-test* library includes an embedded kafka server which cam be used in testing our kafka dependent application logic. In order to use it, first we should add testing libraries (spring-boot-starter-test and spring-kafka-test) to maven pom file.
 
