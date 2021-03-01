@@ -32,6 +32,6 @@ public class KafkaStreamExample {
     }
 
     @Bean
-    public SimpleKafkaMessageConsumerForStreaming simpleKafkaMessageConsumer(){ return new SimpleKafkaMessageConsumerForStreaming();
+    public SimpleKafkaMessageConsumerForStreaming simpleKafkaMessageConsumerForStreaming(){ return new SimpleKafkaMessageConsumerForStreaming();
     }
 }

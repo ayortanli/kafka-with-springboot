@@ -17,7 +17,7 @@ import org.springframework.kafka.annotation.KafkaStreamsDefaultConfiguration;
 import java.util.HashMap;
 import java.util.Map;
 
-@Configuration
+//@Configuration
 @EnableKafka
 @EnableKafkaStreams
 public class SimpleKafkaStream {

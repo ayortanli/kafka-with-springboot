@@ -1,6 +1,5 @@
 package com.ay.testlab.kafka.multipartition;
 
-import com.ay.testlab.kafka.simplemessage.SimpleKafkaMessagingExample;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

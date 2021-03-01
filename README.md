@@ -24,7 +24,7 @@ This project is created for starting Kafka based project much faster by providin
 ### 3. Simple Kafka Messaging Example
 First Create a test topic to use with the example.
 ```bash
-> ./bin/kafka-topics.sh --create --topic kafkaTestTopic --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1
+> ./bin/kafka-topics.sh --create --topic kafkaSimpleMessageTopic --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1
 ```
 
 In the simplemessage package, a message consume/produce example is implemented. In SimpleKafkaMessaging class, we send 100 consecutive messages to Kafka with our producer. Then these messages are consumed by our consumer which subscribes to Kafka server during initialization. Producer and Consumer classes are given below.  

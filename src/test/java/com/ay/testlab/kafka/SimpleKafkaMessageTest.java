@@ -2,23 +2,24 @@ package com.ay.testlab.kafka;
 
 import com.ay.testlab.kafka.simplemessage.SimpleKafkaMessageConsumer;
 import com.ay.testlab.kafka.simplemessage.SimpleKafkaMessageProducer;
-import org.junit.Assert;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.kafka.test.rule.KafkaEmbedded;
+import org.springframework.kafka.test.EmbeddedKafkaBroker;
+import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.concurrent.TimeUnit;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @SpringBootTest
 @DirtiesContext
+@EmbeddedKafka
 @ActiveProfiles("test")
 public class SimpleKafkaMessageTest {
 
@@ -31,13 +32,10 @@ public class SimpleKafkaMessageTest {
     @Autowired
     private SimpleKafkaMessageConsumer consumer;
 
-    @ClassRule
-    public static KafkaEmbedded kafkaEmbedded = new KafkaEmbedded(1,false, "testingTopic");
-
     @Test
-    public void testSendReceive() throws Exception {
+    public void testSendReceive(EmbeddedKafkaBroker broker) throws Exception {
         sender.send(topicName, "test Message");
         TimeUnit.SECONDS.sleep(1);
-        Assert.assertEquals("test Message", consumer.message());
+        Assertions.assertEquals("test Message", consumer.message());
     }
 }
