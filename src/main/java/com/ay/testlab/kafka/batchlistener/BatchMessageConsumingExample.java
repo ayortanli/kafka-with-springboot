@@ -20,8 +20,15 @@ public class BatchMessageConsumingExample {
 
     public void execute() {
         LOGGER.info("BatchMessageConsumingExample is executing...");
-        for (int i = 0; i < 100; ++i) {
-            sender.send(topicName, "BatchMessageConsuming - Message No = " + i);
+        for (int j = 0; j < 10 ; j++) {
+            try {
+                Thread.sleep(10);     //add some lag to producer
+                for (int i = 0; i < 100; ++i) {
+                    sender.send(topicName, "BatchMessageConsuming - Message No = " + i);
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 

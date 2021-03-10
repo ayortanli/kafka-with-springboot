@@ -26,9 +26,9 @@ public class MultiPartitionMessageConsumer {
     }
 
     @KafkaListener(topics = "${kafka.topic.multiPartitionTopic}", containerFactory = "kafkaListenerContainerFactoryWith6Consumer", groupId = "multiPartitionWithSingleConsumer6Thread")
-    public void receive2(@Payload String payload,
-                         @Header(KafkaHeaders.RECEIVED_PARTITION_ID)Long partitionId,
-                         @Header(KafkaHeaders.OFFSET)Long offset) {
+    public void receiver2(@Payload String payload,
+                          @Header(KafkaHeaders.RECEIVED_PARTITION_ID)Long partitionId,
+                          @Header(KafkaHeaders.OFFSET)Long offset) {
         LOGGER.info("Received consumer=2 group=multiPartitionWithSingleConsumer6Thread payload='{}' from partitionId@offset='{}'", payload, partitionId+"@"+offset);
     }
 }

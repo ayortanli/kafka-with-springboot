@@ -1,7 +1,7 @@
 # kafka-with-springboot
 Demonstrations for Kafka with Spring Boot
 
-This project is created for starting Kafka based project much faster by providing simple example applications for different scenarios. It may also be used as a tutorial for those who likes learning by playing with codes. :) 
+This project is created for starting Kafka based project much faster by providing simple example applications for different scenarios. It may also be used as a tutorial for those who likes learning by playing with codes. :)  
 
 ### 1. Kafka Setup:
 - Download Kafka from <https://kafka.apache.org/downloads>
@@ -19,7 +19,7 @@ This project is created for starting Kafka based project much faster by providin
 - For each example, just activate related commented lines in *Application.java*. 
 - Spring boot can inject properties from YAML files by default when they are defined in resource/application.yml. Properties like Kafka initial lookup server address, topic names, and etc. are defined there.
 - KafkaProducerConfig and KafkaConsumerConfig classes contains base configurations for Kafka.
-- There is also a dummy rest controller, if you wish to play Kafka in rest calls.
+- There is also a dummy rest controller, if you wish to play with Kafka in rest calls.
 
 ### 3. Simple Kafka Messaging Example
 First Create a test topic to use with the example.
@@ -62,11 +62,11 @@ This example will demonstrate usage of Kafka with multi-partitioned topic with t
 
 For this example, we first create a new topic "kafkaMultiPartitionTopic" with 3 partitions and also add it to our application.yml file under resource folder.
 ```bash
-> ./bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 3 --topic kafkaMultiPartitionTopic
+> ./bin/kafka-topics.sh --create --topic kafkaMultiPartitionTopic --bootstrap-server localhost:9092 --replication-factor 1 --partitions 3
 ```
 Now we have a new topic with 3 partitions. In this example, we'll make a little change to our message sending method in producer class to control partition selection logic;
 
-Here, *kafkaTemplate* request another parameter called *key*. Kafka uses this parameter to determine which partition is assigned for message. Kafka guarantees that messages with same key value will be assigned to the same partition.
+Here, *kafkaTemplate* requires another parameter called *key*. Kafka uses this parameter as an input to its hash function to determine which partition is assigned for message. Kafka guarantees that messages with the same key value will be assigned to the same partition.
 
 We also add success and failure callbacks here for debugging purpose. These callbacks return valuable information after message is retrieved by Kafka server.
 ```java
@@ -128,7 +128,7 @@ This example will demonstrate usage of Kafka in batch mode. That is; consumers c
 
 Lets first create a new topic "kafkaBatchConsumerTopic" and again add it to our application.yml file under resource folder.
 ```bash
-> ./bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic kafkaBatchConsumerTopic
+> ./bin/kafka-topics.sh --create --topic kafkaBatchConsumerTopic --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1
 ```
 
 I will use a simple message producer in this example, what we will change here is only consumer part. Our consumer should be configured and implemented in a way that it can handle multiple message at a time. First lets take a look at configuration part.
@@ -361,3 +361,6 @@ public class SimpleKafkaMessageTest {
     }
 }
 ```
+### - Extra Kafka Monitoring Tools (Open Source)
+- [Kafka Manager](https://github.com/yahoo/CMAK)  - The most known one, but seems not maintained for a while.
+- [Kafdrop](https://github.com/obsidiandynamics/kafdrop) - The next popular one.

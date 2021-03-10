@@ -13,13 +13,16 @@ public class BatchMessageConsumer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BatchMessageConsumer.class);
 
+    private int consumerTriggerCount = 0;
+
     @KafkaListener(topics = "${kafka.topic.batchConsumerTopic}", containerFactory = "kafkaListenerContainerFactoryForBatchConsumer", groupId = "batchConsumer")
     public void receive(@Payload List<String> payloads,
                         @Header(KafkaHeaders.RECEIVED_PARTITION_ID) List<Long> partitionIds,
                         @Header(KafkaHeaders.OFFSET) List<Long> offsets) {
         LOGGER.info("Received group=batchConsumer with batch group data: ");
+        consumerTriggerCount++;
         for (int i = 0; i< payloads.size(); ++i) {
-            LOGGER.info("---------------- payload='{}' from partitionId@offset='{}'", payloads.get(i), partitionIds.get(i)+"@"+offsets.get(i));
+            LOGGER.info("---------------- consumerTriggerCount='{}' payload='{}' from partitionId@offset='{}'", consumerTriggerCount, payloads.get(i), partitionIds.get(i)+"@"+offsets.get(i));
         }
 
     }
