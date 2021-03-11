@@ -27,7 +27,7 @@ public class Application {
     @Autowired
     private BatchMessageConsumingExample batchMessageConsumingExample;
 
-    //@Autowired
+    @Autowired
     private KafkaStreamExample kafkaStreamExample;
 
     @Bean
