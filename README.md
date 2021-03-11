@@ -186,10 +186,10 @@ For using Kafka Streams, we need to first add kafka-streams library to our proje
 <dependency>
     <groupId>org.apache.kafka</groupId>
     <artifactId>kafka-streams</artifactId>
-    <version>1.0.0</version>
+    <version>2.6.1</version>
 </dependency>
 ```
-For this example, we will create a scenario where producer'll send message to a topic. Than our kafka stream code'll read streams of data, process it and send it to another topic. Finally our consumer'll get processed data and do its job.
+For this example, we will create a scenario where producer will send message to a topic. Than our kafka stream code will read streams of data, process it and send it to another topic. Finally our consumer will get processed data and do its job.
 
 Lets start with creation of two topics one for raw data and another one for processed data.
 
@@ -202,7 +202,7 @@ Then we will create a simple producer that sends data to *kafkaStreamRawDataTopi
 
 Now we can talk about stream processing code block which; in our case, is *SimpleKafkaStream.java*. In our stream class we should define *@EnableKafkaStream* annotation with *@Configuration* annotation by which kafka-streams can declare some beans like StreamBuilder in the application context automatically.
 
-After then, we define config method for connecting our stream code to Kafka and implement our stream processing method. In this example we just revert the string stream data and push it to another topic. As final note; in our configuration bean, we set bean name to *DEFAULT_STREAMS_CONFIG_BEAN_NAME*. By this way, Spring Boot'll inject default StreamBuilder. Otherwise, we should also create a StreamBuilder bean along with our configuration bean.  
+After then, we define config method for connecting our stream code to Kafka and implement our stream processing method. In this example we just reverse the string stream data and push it to another topic. As final note; in our configuration bean, we set bean name to *DEFAULT_STREAMS_CONFIG_BEAN_NAME*. By this way, Spring Boot'll inject default StreamBuilder. Otherwise, we should also create a StreamBuilder bean along with our configuration bean.  
 
 ```java
 @Configuration

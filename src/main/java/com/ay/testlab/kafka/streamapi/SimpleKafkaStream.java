@@ -13,11 +13,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.annotation.EnableKafkaStreams;
 import org.springframework.kafka.annotation.KafkaStreamsDefaultConfiguration;
+import org.springframework.kafka.config.KafkaStreamsConfiguration;
+import org.springframework.kafka.config.StreamsBuilderFactoryBeanCustomizer;
 
 import java.util.HashMap;
 import java.util.Map;
 
-//@Configuration
+@Configuration
 @EnableKafka
 @EnableKafkaStreams
 public class SimpleKafkaStream {
@@ -34,14 +36,21 @@ public class SimpleKafkaStream {
     private String processedDataTopic;
 
     @Bean(name = KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)
-    public StreamsConfig kafkaStreamsConfigs() {
+    public KafkaStreamsConfiguration kafkaStreamsConfigs() {
         Map<String, Object> props = new HashMap<>();
         props.put(StreamsConfig.APPLICATION_ID_CONFIG, "simpleKafkaStream");
         props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
         props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass().getName());
         props.put(StreamsConfig.DEFAULT_TIMESTAMP_EXTRACTOR_CLASS_CONFIG, WallclockTimestampExtractor.class.getName());
-        return new StreamsConfig(props);
+        return new KafkaStreamsConfiguration(props);
+    }
+
+    @Bean
+    public StreamsBuilderFactoryBeanCustomizer customizer() {
+        return fb -> fb.setStateListener((newState, oldState) -> {
+            LOGGER.info("State transition from " + oldState + " to " + newState);
+        });
     }
 
     @Bean
@@ -49,7 +58,7 @@ public class SimpleKafkaStream {
         KStream<String, String> stream = kStreamBuilder.stream(rawDataTopic);
 
         //process messages (reverse order)
-        stream.mapValues(messageValue -> {
+        stream.mapValues( messageValue -> {
             LOGGER.info("Stream:SimpleKafkaStream processing payloads='{}'", messageValue);
             return new StringBuilder(messageValue).reverse().toString();
         }).to(processedDataTopic);
