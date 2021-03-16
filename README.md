@@ -181,7 +181,8 @@ public class BatchMessageConsumer {
 
 ## 6. Kafka Streams Api Example
 
-For using Kafka Streams, we need to first add kafka-streams library to our project. 
+For using Kafka Streams, we need to first add kafka-streams library to our project.   
+Note: kafka-streams doesn't work on windows platform because of a bug in 2.6.1 release. Either use 2.6.0 or wait for 2.6.2...
 ```xml
 <dependency>
     <groupId>org.apache.kafka</groupId>
